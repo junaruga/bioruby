@@ -14,14 +14,21 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/embl/uniprot'
+require 'bio/db/embl/uniprotkb'
 
 module Bio
   class TestUniProt < Test::Unit::TestCase
 
     def setup
       data = File.read(File.join(BioRubyTestDataPath, 'uniprot', 'p53_human.uniprot'))
-      @obj = Bio::UniProt.new(data)
+      # To suppress warning message during the test.
+      old_stderr = $stderr
+      begin
+        $stderr = StringIO.new('', 'w')
+        @obj = Bio::UniProt.new(data)
+      ensure
+        $stderr = old_stderr
+      end
     end
 
     def test_gene_name

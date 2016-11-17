@@ -177,7 +177,17 @@ __END_OF_TEXT__
     def test_sptr
       fn = File.join(TestDataPath, 'uniprot', 'p53_human.uniprot')
       text = File.read(fn)
-      assert_equal(Bio::SPTR, @ad.autodetect(text))
+      old_stderr = $stderr
+      begin
+        $stderr = StringIO.new('', 'w')
+        assert_equal(Bio::SPTR, @ad.autodetect(text))
+        if $VERBOSE then
+          assert_match(/^Bio::SPTR is changed to an alias of Bio::UniProtKB./,
+            $stderr.string)
+        end
+      ensure
+         $stderr = old_stderr
+      end
     end
 
     def test_prosite
